@@ -39,7 +39,23 @@ pipeline {
             }
         }
 
-
+	    
+stage('Initialization'){
+      steps {
+       
+        script{
+          sh "touch pass_file"
+          sh "chmod 640 pass_file"
+          vault_file="vault_file.yaml"
+     			
+          withCredentials([string(credentialsId: 'AnsibleVault', variable: 'password')]) {
+              sh "echo ${password} > ${vault_file}"
+              sh "cat vault_file.yaml"
+          }
+                      
+        }
+      }
+    }
 
    }
 
