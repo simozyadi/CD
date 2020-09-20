@@ -61,7 +61,7 @@ def getImageTags(imageName, env = null) {
     }
 
     def tags = null
-    withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+    withCredentials([usernamePassword(credentialsId: 'hub-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
         def portusApiUrl = 'https://registry-1.docker.io/v2'
         def dockerRegistryApiUrl = 'https://registry-1.docker.io/v2'
