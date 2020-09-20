@@ -55,9 +55,9 @@ def getImageTags(imageName, env = null) {
     def filterRegExp
 
     if(env == 'ppd' || env == 'prd') {
-        filterRegExp = '^\\d+\\.\\d+\\.\\d+$'
+        filterRegExp = '.*'
     } else {
-        filterRegExp = '^\\d+\\.\\d+\\.\\d+.*'
+        filterRegExp = '.*'
     }
 
     def tags = null
