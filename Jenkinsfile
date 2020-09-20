@@ -63,11 +63,11 @@ def getImageTags(imageName, env = null) {
     def tags = null
     withCredentials([usernamePassword(credentialsId: 'hub-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
-        def portusApiUrl = 'https://registry-1.docker.io/v2'
+        def portusApiUrl = 'https://auth.docker.io/'
         def dockerRegistryApiUrl = 'https://registry-1.docker.io/v2'
         def reposName = "nimrodops/${imageName}"
 
-        def getTokenUrl = "${portusApiUrl}/token/?service=docker-registry:5000&scope=repository:${reposName}:pull"
+        def getTokenUrl = "${portusApiUrl}token?service=registry.docker.io&scope=repository::${reposName}:pull"
         def getTokenCommand = 'set +x && curl -s GET \'' + getTokenUrl + '\' -H "Authorization: Basic $(echo -n $USERNAME:$PASSWORD | base64)"'
         def getTokenResponse = sh(script: getTokenCommand, returnStdout: true)
         def token = readJSON(text: getTokenResponse).token
