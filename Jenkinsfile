@@ -63,7 +63,7 @@ def getImageTags(imageName, env = null) {
     def tags = null
     withCredentials([usernamePassword(credentialsId: 'hub-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
 
-        def portusApiUrl = 'https://auth.docker.io/v2'
+        def portusApiUrl = 'https://auth.docker.io/'
         def dockerRegistryApiUrl = 'https://registry-1.docker.io/v2'
         def reposName = "nimrodops/${imageName}"
 
