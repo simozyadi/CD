@@ -7,12 +7,12 @@
     - helm
 
 - name: "Update inventory"
-  include: inventory.yaml
+  include: roles/deploy/tasks/inventory.yaml
   tags:
     - inventory
 
 - name: Displaying encrypted extrat_vars
-  shell: "cat ../extrat_vars.yaml"
+  shell: "cat ../pass.yaml"
   register: extrat_vars_results
   tags:
     - helm
