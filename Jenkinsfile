@@ -44,6 +44,56 @@ pipeline {
             }
         }
 
+  stage('Initialization'){
+      steps {
+       
+        script{
+          
+          pass_file="pass.yaml"
+     			
+          withCredentials([string(credentialsId: 'AnsibleVault', variable: 'vaultPass')]) {
+              sh "echo 'vaultpass: ${vaultPass}' > ${pass_file}"
+              sh "cat pass.yaml"
+          }
+                      
+        }
+      }
+    }
+  stage('Update Inventory'){
+      steps {
+        script{
+            withCredentials([usernamePassword(credentialsId: 'GitCredentialsYass', passwordVariable: 'GIT_PWD', usernameVariable: 'GIT_LOGIN')]) {    
+              sh """
+                 git remote set-url origin https://${GIT_LOGIN}:${GIT_PWD}@https://github.com/simozyadi/CD.git
+				 
+		ansible-playbook ansible/main.yml -i ansible/hosts -e workdir=${WORKSPACE} -t inventory --extra-vars 'BUILD_NUMBER=${env.BUILD_NUMBER}' --extra-vars 'BRANCH_NAME=${env.BRANCH_NAME}'  --extra-vars 'GIT_LOGIN=${GIT_LOGIN}' --extra-vars 'GIT_PWD=${GIT_PWD}' --extra-vars 'SERVICE_NAME=${SERVICE_NAME}' --extra-vars 'IMAGE_VER=${FINAL_APP_VERSION}'
+
+                 git add inventory.yml
+                 git -c user.name='${GIT_LOGIN}' -c user.email='${GIT_LOGIN}' commit -m 'Update Inventory By Jenkins for deployment number ${BUILD_NUMBER}' || true
+                 git push origin HEAD:${env.BRANCH_NAME}
+                  
+                """
+              // 
+              }
+            
+        }
+      }
+    }
+ 
+    stage('Deploy Application'){
+      steps {
+        script{
+          withCredentials([usernamePassword(credentialsId: 'GitCredentialsYass', passwordVariable: 'GIT_PWD', usernameVariable: 'GIT_LOGIN')]) {
+
+            sh """
+              
+              pwd && ls 
+              ansible-playbook ansible/main.yml -i ansible/hosts -e workdir=${WORKSPACE} -t helm --extra-vars '@extrat_vars.yaml' --extra-vars 'GIT_LOGIN=${GIT_LOGIN}' --extra-vars 'GIT_PWD=${GIT_PWD}'
+            """
+          }
+        }
+      }
+    }
 
 
    }

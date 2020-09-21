@@ -1,0 +1,13 @@
+- hosts: localhost
+  vars_files:
+    - "{{workdir}}/inventory.yml"
+  connection: local
+  gather_facts: no
+  environment:
+    KUBECONFIG: "{{workdir}}/kubeconfig"
+  vars:
+    kubeconfig: "{{workdir}}/kubeconfig"
+  roles:
+    - role: deploy
+
+

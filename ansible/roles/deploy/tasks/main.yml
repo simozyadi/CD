@@ -1,0 +1,115 @@
+---
+- set_fact:
+    path_helm: "{{ item.directory }}"
+  when: repos is defined
+  with_items: "{{ repos }}"
+  tags:
+    - helm
+
+- name: Updating Inventory
+  yedit:
+    src: "{{workdir}}/inventory.yml"
+    key: images.{{SERVICE_NAME}}.version
+    value: "{{IMAGE_VER}}"
+  register: update_inventory
+  tags:
+   - inventory
+
+
+- name: Displaying encrypted extrat_vars
+  shell: "cat ../extrat_vars.yaml"
+  register: extrat_vars_results
+  tags:
+    - helm
+
+- name: Writing vault pass to file
+  shell: "echo {{ vaultpass }} > .vaultpass"
+  tags:
+    - helm
+
+
+- name: Decrypting Kubeconfig
+  shell: "ansible-vault decrypt {{workdir}}/kubeconfig --vault-password-file  .vaultpass"
+  ignore_errors: True
+  tags:
+    - helm
+
+- name: Decrypting project values
+  shell: "ansible-vault decrypt {{workdir}}/values.yaml --vault-password-file  .vaultpass"
+  ignore_errors: True
+  tags:
+    - helm
+
+
+- name: Injecting Kubeconfig
+  set_fact:
+    KUBECONFIG_FULLPATH: "{{workdir}}/kubeconfig"
+  tags:
+   - helm
+
+
+- name: Extracting namespaces
+  shell: "kubectl --kubeconfig={{KUBECONFIG_FULLPATH}} config view|grep namespace|cut -d : -f 2| tr -d '[:space:]'"
+  register: kubectl_namespace
+  tags:
+   - helm
+- debug: 
+    msg: "namespace {{ kubectl_namespace.stdout }} "
+  tags:
+   - helm  
+
+
+
+- name: Preparing Tiller Setup
+  set_fact:
+    TILLER_NAMESPACE: "{{ kubectl_namespace.stdout }}"
+  tags:
+   - helm
+
+- name: Setting Tiller
+  include: tiller.yaml
+  tags:
+    - helm
+
+
+- name: Deleting Old Charts
+  command: helm delete --purge  "{{item.key}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}"
+
+  register: helm_del_results
+  changed_when: "'not found' not in helm_del_results.stderr_lines"
+  failed_when: "helm_del_results.rc != 0 and 'not found' not in helm_del_results.stderr"
+  loop: "{{ lookup('dict', images, wantlist=True) }}"
+  tags:
+    - helm
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG_FULLPATH }}"
+    TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
+
+
+- name: Installing Charts
+  when: images is defined
+  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}" 
+  register: helm_install_results
+  changed_when: "'already exists' not in helm_install_results.stderr_lines"
+  failed_when: "helm_install_results.rc != 0 and 'already exists' not in helm_install_results.stderr"
+  loop: "{{ lookup('dict', images, wantlist=True) }}"
+  tags:
+   - helm
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG_FULLPATH }}"
+    TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
+
+
+- name: Upgrading Charts
+  when: images is defined 
+  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}" 
+  register: helm_upgrade_results
+  changed_when: "'already exists'  in helm_upgrade_results.stderr_lines"
+  failed_when: "helm_upgrade_results.rc != 0 and 'already exists' not in helm_upgrade_results.stderr"
+  loop: "{{ lookup('dict', images, wantlist=True) }}"
+  tags:
+   - helm
+  environment:
+    KUBECONFIG: "{{ KUBECONFIG_FULLPATH }}"
+    TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
+
