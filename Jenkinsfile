@@ -64,7 +64,7 @@ pipeline {
         script{
             withCredentials([usernamePassword(credentialsId: 'GitCredentialsYass', passwordVariable: 'GIT_PWD', usernameVariable: 'GIT_LOGIN')]) {
               sh """
-                 git remote set-url origin https://${GIT_LOGIN}:${GIT_PWD}@github.com/simozyadi/CD.git
+                 git remote add origin https://${GIT_LOGIN}:${GIT_PWD}@github.com/simozyadi/CD.git
 
                 ansible-playbook ansible/main.yml -i ansible/hosts -e workdir=${WORKSPACE} -t inventory --extra-vars 'BUILD_NUMBER=${env.BUILD_NUMBER}' --extra-vars 'BRANCH_NAME=${env.BRANCH_NAME}'  --extra-vars 'GIT_LOGIN=${GIT_LOGIN}' --extra-vars 'GIT_PWD=${GIT_PWD}' --extra-vars 'SERVICE_NAME=${SERVICE_NAME}' --extra-vars 'IMAGE_VER=${FINAL_APP_VERSION}'
 
