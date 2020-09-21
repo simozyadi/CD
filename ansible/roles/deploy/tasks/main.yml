@@ -67,15 +67,12 @@
 - name: Creating Service Account
   command: kubectl create serviceaccount --namespace "{{ TILLER_NAMESPACE }}" tiller
   register: kubectl_svac_results
-  changed_when: "already exists not in kubectl_svac_results.stderr_lines"
-  failed_when: "kubectl_svac_results.rc != 0 and 'already exists' not in kubectl_svac_results.stderr"
   tags:
    - helm
 
 - name: Configuring RBAC
   command: kubectl apply -f "{{ role_path }}/files/tiller.yaml"
   register: kubectl_tiller_results
-  changed_when: " 'already installed' not in kubectl_tiller_results.stdout"
   tags:
    - helm
 
