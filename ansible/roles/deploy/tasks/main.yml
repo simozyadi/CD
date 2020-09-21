@@ -68,7 +68,7 @@
 - name: Setting Tiller
   include: tiller.yaml
   tags:
-    - helm
+   - helm
 
 
 - name: Deleting Old Charts
@@ -79,7 +79,7 @@
   failed_when: "helm_del_results.rc != 0 and 'not found' not in helm_del_results.stderr"
   loop: "{{ lookup('dict', images, wantlist=True) }}"
   tags:
-    - helm
+   - helm
   environment:
     KUBECONFIG: "{{ KUBECONFIG_FULLPATH }}"
     TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
