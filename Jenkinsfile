@@ -1,3 +1,8 @@
+def FINAL_APP_ENV = "dev"
+def FINAL_APP_NAME = "nginx-app"
+def FINAL_APP_ENV_TYPE = "dev"
+
+
 pipeline {
 
     environment {
