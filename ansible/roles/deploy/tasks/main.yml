@@ -6,10 +6,14 @@
   tags:
     - helm
 
-- name: "Update inventory"
-  include: roles/deploy/tasks/inventory.yaml
+- name: Updating Inventory
+  yedit:
+    src: "{{workdir}}/inventory.yml"
+    key: images.{{SERVICE_NAME}}.version
+    value: "{{IMAGE_VER}}"
+  register: update_inventory
   tags:
-    - inventory
+   - inventory
 
 - name: Displaying encrypted extrat_vars
   shell: "cat ../pass.yaml"
