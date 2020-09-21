@@ -49,10 +49,10 @@ pipeline {
 
         script{
 
-          pass_file="pass.yaml"
+         
 
           withCredentials([string(credentialsId: 'AnsibleVault', variable: 'vaultPass')]) {
-              sh "echo 'vaultpass: ${vaultPass}' > ${pass_file}"
+              sh "echo 'vaultpass: ${vaultPass}' > pass.yaml}"
               sh "cat pass.yaml"
           }
 
@@ -83,7 +83,7 @@ pipeline {
             sh """
 
               pwd && ls
-              ansible-playbook ansible/main.yml -i ansible/hosts -e workdir=${WORKSPACE} -t helm --extra-vars '@extrat_vars.yaml' --extra-vars 'GIT_LOGIN=${GIT_LOGIN}' --extra-vars 'GIT_PWD=${GIT_PWD}'
+              ansible-playbook ansible/main.yml -i ansible/hosts -e workdir=${WORKSPACE} -t helm --extra-vars '@pass.yaml' --extra-vars 'GIT_LOGIN=${GIT_LOGIN}' --extra-vars 'GIT_PWD=${GIT_PWD}'
             """
           }
         }
