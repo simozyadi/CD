@@ -49,10 +49,10 @@ pipeline {
 
         script{
 
-         
+          var="pass.yaml" 
 
           withCredentials([string(credentialsId: 'AnsibleVault', variable: 'vaultPass')]) {
-              sh "echo 'vaultpass: ${vaultPass}' > pass.yaml}"
+              sh "echo 'vaultpass: ${vaultPass}' > ${var}"
               sh "cat pass.yaml"
           }
 
