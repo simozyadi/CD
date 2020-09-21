@@ -69,7 +69,7 @@ pipeline {
 
                  git add inventory.yml
                  git -c user.name='${GIT_LOGIN}' -c user.email='${GIT_LOGIN}' commit -m 'Update Inventory By Jenkins for deployment number ${BUILD_NUMBER}' || true
-                 git push https://'${GIT_LOGIN}':'${GIT_PWD}'@github.com/simozyadi/CD.git HEAD:${env.BRANCH_NAME}
+                 git push origin HEAD:${env.BRANCH_NAME}
 
                 """
               //
