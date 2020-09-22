@@ -15,11 +15,6 @@
   tags:
    - inventory
 
-- name: Displaying encrypted extrat_vars
-  shell: "cat ../pass.yaml"
-  register: extrat_vars_results
-  tags:
-    - helm
 
 - name: Writing vault pass to file
   shell: "echo {{ vaultpass }} > .vaultpass"
@@ -33,12 +28,6 @@
   tags:
     - helm
 
-- name: Decrypting project values
-  shell: "ansible-vault decrypt {{workdir}}/helm/values.yaml --vault-password-file  .vaultpass"
-  ignore_errors: True
-  tags:
-    - helm
-
 
 - name: Injecting Kubeconfig
   set_fact:
@@ -47,58 +36,8 @@
    - helm
 
 
-- name: Extracting namespaces
-  shell: "kubectl --kubeconfig={{KUBECONFIG_FULLPATH}} config view|grep namespace|cut -d : -f 2| tr -d '[:space:]'"
-  register: kubectl_namespace
-  tags:
-   - helm
-- debug: 
-   msg: "namespace {{ kubectl_namespace.stdout }} "
-  tags:
-   - helm  
-
-
-
-  
-- name: Getting Helm Version
-  command: helm version  --tiller-namespace "{{ TILLER_NAMESPACE }}"
-  register: helm_version_result
-  
-- debug:
-    var:  helm_version_result.stdout_lines 
-  tags:
-    - helm
-
-- name: Listing Installed Helm Charts
-  command: helm ls --tiller-namespace "{{ TILLER_NAMESPACE }}"
-  register: helm_list_results
-- debug:
-    var: helm_list_results.stdout_lines
-  tags:
-    - helm
-
-- name: Listing Installed Helm Charts
-  command: helm ls --tiller-namespace "{{ TILLER_NAMESPACE }}"
-  register: helm_list_results
-- debug:
-    var: helm_list_results.stdout_lines
-- debug:
-    var:  helm_version_result.stdout_lines
-  tags:
-   - helm
-
-- name: Listing Installed Helm Charts
-  command: helm ls --tiller-namespace "{{ TILLER_NAMESPACE }}"
-  register: helm_list_results
-- debug:
-    var: helm_list_results.stdout_lines
- # changed_when: False
-  tags:
-   - helm
-
-
 - name: Deleting Old Charts
-  command: helm delete --purge  "{{item.key}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}"
+  command: helm delete --purge  "{{item.key}}" 
 
   register: helm_del_results
   changed_when: "'not found' not in helm_del_results.stderr_lines"
@@ -113,7 +52,7 @@
 
 - name: Installing Charts
   when: images is defined
-  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}" 
+  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}" 
   register: helm_install_results
   changed_when: "'already exists' not in helm_install_results.stderr_lines"
   failed_when: "helm_install_results.rc != 0 and 'already exists' not in helm_install_results.stderr"
@@ -127,7 +66,7 @@
 
 - name: Upgrading Charts
   when: images is defined 
-  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}"  --tiller-namespace "{{ TILLER_NAMESPACE }}" 
+  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{path_helm}}/{{item.value.chart_name}}"  
   register: helm_upgrade_results
   changed_when: "'already exists'  in helm_upgrade_results.stderr_lines"
   failed_when: "helm_upgrade_results.rc != 0 and 'already exists' not in helm_upgrade_results.stderr"
