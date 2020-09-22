@@ -66,7 +66,37 @@
    - helm
 
 - name: "install tiller"
-  include: tiller.yaml
+  command: helm init --namespace "{{ TILLER_NAMESPACE }}"
+  tags:
+    - helm
+
+- name: Configuring RBAC
+  command: kubectl apply -f "{{ role_path }}/files/tiller.yaml"
+  register: kubectl_tiller_results
+  changed_when: " 'already installed' not in kubectl_tiller_results.stdout"
+  tags:
+    - helm  
+
+- name: Wait for Tiller
+  command: sleep 20
+  register: " 'already installed' not in kubectl_tiller_results.stdout"
+  tags:
+    - helm
+  
+- name: Getting Helm Version
+  command: helm version  --tiller-namespace "{{ TILLER_NAMESPACE }}"
+  register: helm_version_result
+  
+- debug:
+    var:  helm_version_result.stdout_lines 
+  tags:
+    - helm
+
+- name: Listing Installed Helm Charts
+  command: helm ls --tiller-namespace "{{ TILLER_NAMESPACE }}"
+  register: helm_list_results
+- debug:
+    var: helm_list_results.stdout_lines
   tags:
     - helm
 
