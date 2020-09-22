@@ -54,7 +54,7 @@
 
 - name: Installing Charts
   when: images is defined
-  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../helm/deploy/{{item.value.chart_name}}" 
+  command: helm install --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../helm/deploy/{{item.value.chart_name}}" 
   register: helm_install_results
   changed_when: "'already exists' not in helm_install_results.stderr_lines"
   failed_when: "helm_install_results.rc != 0 and 'already exists' not in helm_install_results.stderr"
