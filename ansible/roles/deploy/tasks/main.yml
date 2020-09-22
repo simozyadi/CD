@@ -37,7 +37,7 @@
 
 
 - name: Deleting Old Charts
-  command: helm delete --purge  "{{item.key}}" 
+  command: helm delete "{{item.key}}" 
 
   register: helm_del_results
   changed_when: "'not found' not in helm_del_results.stderr_lines"
