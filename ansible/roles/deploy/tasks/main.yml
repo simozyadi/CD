@@ -6,7 +6,7 @@
   tags:
     - helm
   vars:
-    path_helm: ./helm/deploy/
+    helm_path: ./helm/deploy/
 
 - name: Updating Inventory
   yedit:
