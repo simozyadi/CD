@@ -1,0 +1,26 @@
+{{- $redlinc := .Values.microservice.name -}}
+{{- $env := .Values.environment.type -}}
+{{- $svc :=  printf "%s-svc" .Values.microservice.name -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app.name  }}-{{ $svc }}
+  labels:
+    app: {{ .Values.app.name  }}
+    component: {{ $redlinc }}
+    environment: {{ $env }}
+    version: {{ .Values.microservice.tag | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port.servicePort }}
+      targetPort: {{ .Values.service.port.containerPort }}
+      protocol: {{ .Values.service.port.protocol }}
+      name: {{ .Values.service.port.name }}
+  selector:
+    component: {{ $redlinc }}
+    environment: {{ $env }}
+    version: {{ .Values.microservice.tag | quote }}
+
+
+
