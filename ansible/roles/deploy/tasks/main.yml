@@ -5,6 +5,8 @@
   with_items: "{{ repos }}"
   tags:
     - helm
+  vars:
+    path_helm: ./helm/deploy/
 
 - name: Updating Inventory
   yedit:
@@ -52,7 +54,7 @@
 
 - name: Installing Charts
   when: images is defined
-  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{chart_name}}/{{item.value.chart_name}}" 
+  command: helm install --name "{{item.key}}"  --values="../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{helm_path}}/{{item.value.chart_name}}" 
   register: helm_install_results
   changed_when: "'already exists' not in helm_install_results.stderr_lines"
   failed_when: "helm_install_results.rc != 0 and 'already exists' not in helm_install_results.stderr"
@@ -66,7 +68,7 @@
 
 - name: Upgrading Charts
   when: images is defined 
-  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{chart_name}}/{{item.value.chart_name}}"  
+  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../{{helm_path}}/{{item.value.chart_name}}"  
   register: helm_upgrade_results
   changed_when: "'already exists'  in helm_upgrade_results.stderr_lines"
   failed_when: "helm_upgrade_results.rc != 0 and 'already exists' not in helm_upgrade_results.stderr"
