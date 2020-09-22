@@ -53,7 +53,7 @@
   tags:
    - helm
 - debug: 
-    msg: "namespace {{ kubectl_namespace.stdout }} "
+   msg: "namespace {{ kubectl_namespace.stdout }} "
   tags:
    - helm  
 
@@ -67,14 +67,16 @@
 - name: Creating Service Account
   command: kubectl create serviceaccount --namespace "{{ TILLER_NAMESPACE }}" tiller
   register: kubectl_svac_results
-  changed_when: "'already exists' not in kubectl_svac_results.stderr_lines"
+  changed_when: "'{{ already exists }}' not in kubectl_svac_results.stderr_lines"
   failed_when: "kubectl_svac_results.rc != 0 and 'already exists' not in kubectl_svac_results.stderr"
-
+  tags:
+    - helm
 - name: Configuring RBAC
   command: kubectl apply -f "{{ role_path }}/files/tiller.yaml"
   register: kubectl_tiller_results
   changed_when: " 'already installed' not in kubectl_tiller_results.stdout"
-  
+  tags:
+    - helm  
 
 - name: Initializing Tiller
   command: helm init --service-account tiller --tiller-namespace "{{ TILLER_NAMESPACE }}"
@@ -84,11 +86,13 @@
 - name: Wait for Tiller
   command: sleep 15
   register: " 'already installed' not in kubectl_tiller_results.stdout"
-  
+  tags:
+    - helm  
 - name: Getting Helm Version
   command: helm version  --tiller-namespace "{{ TILLER_NAMESPACE }}"
   register: helm_version_result
-  
+  tags:
+    - helm  
 - debug:
     var:  helm_version_result.stdout_lines 
 
