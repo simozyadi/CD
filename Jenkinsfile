@@ -14,7 +14,7 @@ pipeline {
 
         docker {
 
-            image 'siticom/terraform-ansible'
+            image 'nimrodops/nginx-app:tagname'
             label 'cdnode'
             args "-u root:root --entrypoint='' --network host"
 

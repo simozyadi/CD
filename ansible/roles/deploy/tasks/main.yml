@@ -34,7 +34,7 @@
     - helm
 
 - name: Decrypting project values
-  shell: "ansible-vault decrypt {{workdir}}/values.yaml --vault-password-file  .vaultpass"
+  shell: "ansible-vault decrypt {{workdir}}/helm/values.yaml --vault-password-file  .vaultpass"
   ignore_errors: True
   tags:
     - helm
