@@ -14,7 +14,7 @@ pipeline {
 
         docker {
 
-            image 'nimrodops/nginx-app:tagname'
+            image 'nimrodops/nginx-app:1'
             label 'cdnode'
             args "-u root:root --entrypoint='' --network host"
 
