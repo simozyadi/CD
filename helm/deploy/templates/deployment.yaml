@@ -35,55 +35,7 @@ spec:
           {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.healthcheck.path }}
-              port: {{ .Values.healthcheck.port }}
-            initialDelaySeconds: 150
-            periodSeconds: 10
-            failureThreshold: 6
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.healthcheck.path }}
-              port: {{ .Values.healthcheck.port }}
-            initialDelaySeconds: 160
-            periodSeconds: 15
-            failureThreshold: 6
-          # volumeMounts:
-          # - name: cacerts-pvc
-          #   mountPath: "/etc/ssl/certs/java"
-          #   readOnly: true
       imagePullSecrets:
       - name: {{ .Values.microservice.registrysecret }}
-      #volumes:
-        # - name: trustscript
-        #   configMap:
-        #     name: trustscript
-
-        # - name: cacerts-pvc
-        #   persistentVolumeClaim:
-        #     claimName: cacerts-pvc
-      # initContainers:
-      # - name: trustcerts
-      #   image: denvazh/java
-      #   #image: harisekhon/ubuntu-java
-      #   command: ["/bin/sh","-c"]
-      #   args: ["cp /etc/ssl/certs/java/cacerts /work-dir/ && cp /work-dir2/trustcerts.sh /work-dir/ && cd /work-dir && sh trustcerts.sh >> log "]
-      #   resources:
-      #     requests:
-      #       memory: "500Mi"
-      #       cpu: "500m"
-      #     limits:
-      #       memory: "500Mi"
-      #       cpu: "500m"
-      #   env:
-      #   - name: trustedcerts
-      #     value: {{ .Values.trustedcerts }}
-      #   volumeMounts:
-      #     - name: cacerts-pvc
-      #       mountPath: "/work-dir"
-      #     - name: trustscript
-      #       mountPath: /work-dir2/trustcerts.sh
-      #       subPath: trustcerts.sh
 
 
