@@ -5,7 +5,7 @@ images:
   nginx-app:
     image: nimrodops/nginx-app
     version: 0000
-    chart_name: helm/deploy/
+    chart_name: deploy
     value_name: helm/values.yaml
 
 
