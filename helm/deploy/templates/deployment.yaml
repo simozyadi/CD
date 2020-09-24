@@ -33,15 +33,6 @@ spec:
             protocol: {{ .protocol }}
             name: {{ .name }}
           {{- end }}
-          env:
-{{ toYaml .Values.microservice.env | indent 12 }}
-
-            
-
-            - name: JHIPSTER_METRICS_PROMETHEUS_ENABLED
-              value: "true"
-            - name: JHIPSTER_METRICS_PROMETHEUS_ENDPOINT
-              value: /prometheusMetrics
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           readinessProbe:
