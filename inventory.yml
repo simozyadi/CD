@@ -6,7 +6,7 @@ images:
     image: nimrodops/nginx-app
     version: 0000
     chart_name: deploy
-    value_name: helm/values.yaml
+    value_name: helm/values.yml
 
 
 kubeconfig:
