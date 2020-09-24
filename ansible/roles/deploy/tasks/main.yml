@@ -66,16 +66,3 @@
     TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
 
 
-- name: Upgrading Charts
-  when: images is defined 
-  command: helm upgrade  --force  "{{item.key}}"  -f "../{{ item.value.value_name }}" --set microservice.repository="{{item.value.image}}" --set microservice.tag="{{item.value.version}}" "../helm/{{item.value.chart_name}}"  
-  register: helm_upgrade_results
-  changed_when: "'already exists'  in helm_upgrade_results.stderr_lines"
-  failed_when: "helm_upgrade_results.rc != 0 and 'already exists' not in helm_upgrade_results.stderr"
-  loop: "{{ lookup('dict', images, wantlist=True) }}"
-  tags:
-   - helm
-  environment:
-    KUBECONFIG: "{{ KUBECONFIG_FULLPATH }}"
-    TILLER_NAMESPACE: "{{TILLER_NAMESPACE}}"
-
