@@ -32,10 +32,3 @@ varEnv:
   enabled: true
 
 
-resources:
-  limits:
-    cpu: 4000m
-    memory: 4000Mi
-  requests:
-    cpu: 4000m
-    memory: 4000Mi
