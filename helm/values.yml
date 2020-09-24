@@ -19,14 +19,6 @@ microservice:
       port: 8080
       protocol: TCP
 
-healthcheck:
-  path: /management/health
-  port: 8080
-
-metrics:
-  enabled: true
-  path: /management/prometheus
-  port: http
 
 service:
   type: ClusterIP
